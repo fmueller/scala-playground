@@ -1,0 +1,2 @@
+ADD: real dao implementations with Anorm as sql library
+ADD: tests with mocking
