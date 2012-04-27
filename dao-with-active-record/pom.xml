@@ -9,7 +9,7 @@
   <description>This project tries to explore possibilities to mix the DAO pattern with active record like features. The goal is to prevent tight coupling and enabling calls to persistence layer from domain objects.</description>
 
   <properties>
-    <scala.version>2.9.1-1</scala.version>
+    <scala.version>2.9.2</scala.version>
   </properties>
 
   <dependencies>
