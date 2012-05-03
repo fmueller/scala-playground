@@ -5,7 +5,7 @@ import app.persistence.MockedActiveRecordFaclities
 
 import org.junit.runner.RunWith
 import org.mockito.Mockito
-import org.scalatest.FunSpec
+import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 
@@ -13,7 +13,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 
 @RunWith(classOf[JUnitRunner])
-class BirthdayServiceSpec extends FunSpec with ShouldMatchers with MockedActiveRecordFaclities {
+class BirthdayServiceSpec extends WordSpec with ShouldMatchers with MockedActiveRecordFaclities {
 
   var service: BirthdayService = _
   var dummy: Person = _
@@ -27,22 +27,22 @@ class BirthdayServiceSpec extends FunSpec with ShouldMatchers with MockedActiveR
     when(personDao.findAll()).thenReturn(Seq(dummy, other))
   }
 
-  describe("A birthday service") {
+  "A birthday service" when {
 
-    describe("when celebrateBirthdayAndInviteOthers") {
+    "birthday is celebrated and others are invited" should {
 
-      it("should trigger database only once to retrieve all persons") {
+      "trigger database only once to retrieve all persons" in {
         service.celebrateBirthdayAndInviteOthers(dummy)
         verify(personDao).findAll()
       }
 
-      it("should notify all others about birthday") {
+      "notify all others about birthday" in {
         service.celebrateBirthdayAndInviteOthers(dummy)
         verify(notificationDao).save(
             Notification(from = dummy, to = other, message = BirthdayService.BIRTHDAY_MESSAGE))
       }
 
-      it("should update person in database after others were informed about birthday") {
+      "update person in database after others were informed about birthday" in {
         service.celebrateBirthdayAndInviteOthers(dummy)
         val order = inOrder(personDao)
         order.verify(personDao).findAll()
