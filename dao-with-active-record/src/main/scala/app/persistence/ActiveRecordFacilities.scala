@@ -17,9 +17,6 @@ object ActiveRecordFacilities {
     }
   }
 
-  implicit val personDao = PersonDao
-  implicit val notificationDao = NotificationDao
-
   implicit def idEntityToDeletableProvider[T <: IdEntity](entity: T)(implicit dao: Dao[T]) : DeletableProvider[T] = {
     new DeletableProvider[T](dao, entity)
   }
