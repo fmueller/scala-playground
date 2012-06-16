@@ -15,7 +15,7 @@ object GroupParser extends RegexParsers {
 
   def parse(str: String) : List[Group] = parseAll(groups, str) match {
     case Success(groups, _) => groups
-    case Failure(groups, _) => Nil
+    case Failure(_, _) => Nil
   }
 
   def groups : Parser[List[Group]] = "[groups]" ~> rep(group) ^^ ( List() ++ _ )
