@@ -1,4 +1,15 @@
-*.pydevproject
+*.class
+*.log
+
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+.scala_dependencies
+
 .project
 .metadata
 bin/**
@@ -12,13 +23,10 @@ local.properties
 .classpath
 .settings/
 .loadpath
-
-# External tool builders
 .externalToolBuilders/
 
-# Locally stored "Eclipse launch configurations"
 *.launch
-
-target/
-
 *.cache
+
+.idea/
+.idea_modules/
