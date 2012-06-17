@@ -15,6 +15,10 @@ class WordIndexerSpec extends WordSpec with ShouldMatchers {
       indexWithSuccess("Test", withOutput("Test (1,1)"))
     }
 
+    "one word with leading non word characters" in {
+      indexWithSuccess("    ,:.+*Test", withOutput("Test (1,10)"))
+    }
+
     "two words" in {
       indexWithSuccess("Hello World", withOutput("Hello (1,1)\nWorld (1,7)"))
     }
@@ -42,7 +46,7 @@ class WordIndexerSpec extends WordSpec with ShouldMatchers {
     }
 
     "case sensitive but print out properly" in {
-      indexWithSuccess("Der Die Das der", withOutput("Das (1,9)\nDer (1,1)\nder (1,13)\nDie (1,5)"))
+      indexWithSuccess("Der Die Das der", withOutput("Das (1,9)\nder (1,13)\nDer (1,1)\nDie (1,5)"))
     }
 
     "one word when input ends with non-word characters" in {
