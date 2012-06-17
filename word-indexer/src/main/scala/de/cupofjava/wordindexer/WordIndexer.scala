@@ -8,7 +8,7 @@ package de.cupofjava.wordindexer
  */
 object WordIndexer {
 
-  def index(text: String) : Index = text.lines.zipWithIndex.map(line => {
+  def index(text: String) : Index = text.lines.toList.par.zipWithIndex.map(line => {
     positions(Index(), line._1, line._2)
   }).foldLeft(Index())(_ + _)
 
