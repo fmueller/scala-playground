@@ -8,22 +8,22 @@ package de.cupofjava.wordindexer
  */
 object WordIndexer {
 
-  def index(text: String) : Index = positions(Index(), text.lines.toList)
+  def index(text: String) : Index = text.lines.zipWithIndex.map(line => {
+    positions(Index(), line._1, line._2)
+  }).foldLeft(Index())(_ + _)
 
   @annotation.tailrec
-  private def positions(index: Index, lines: List[String], line: Int = 1, position: Int = 0) : Index = {
-    if (lines.isEmpty) {
+  private def positions(index: Index, line: String, numberOfLine: Int, position: Int = 0) : Index = {
+    if (line.isEmpty) {
       index
-    } else if (lines.head.isEmpty) {
-        positions(index, lines.tail, line + 1)
     } else {
-      val word = nextWord(lines.head)
+      val word = nextWord(line)
       if (word._2.isEmpty) {
-        val nonWord = nonWordCharacters(lines.head)
-        positions(index, List(nonWord._1) ++ lines.tail, line, position + nonWord._2.length)
+        val nonWord = nonWordCharacters(line)
+        positions(index, nonWord._1, numberOfLine, position + nonWord._2.length)
       } else {
-        positions(index + (word._2, Set(Position(line, position + 1))),
-                  List(word._1) ++ lines.tail, line, position + word._2.length)
+        positions(index + (word._2, Set(Position(numberOfLine + 1, position + 1))),
+                  word._1, numberOfLine, position + word._2.length)
       }
     }
   }
