@@ -10,25 +10,25 @@ object WordIndexer {
 
   def index(text: String) : Index = positions(Index(), text.lines.toList)
 
+  @annotation.tailrec
   private def positions(index: Index, lines: List[String], line: Int = 1, position: Int = 0) : Index = {
     if (lines.isEmpty) {
       index
-    } else {
-      if (lines.head.isEmpty) {
+    } else if (lines.head.isEmpty) {
         positions(index, lines.tail, line + 1)
+    } else {
+      val word = nextWord(lines.head)
+      if (word._2.isEmpty) {
+        val nonWord = nonWordCharacters(lines.head)
+        positions(index, List(nonWord._1) ++ lines.tail, line, position + nonWord._2.length)
       } else {
-        val word = nextWord(lines.head)
-        if (word._2.isEmpty) {
-          val nonWord = nonWordCharacters(lines.head)
-          positions(index, List(nonWord._1) ++ lines.tail, line, position + nonWord._2.length)
-        } else {
-          positions(index + (word._2, Set(Position(line, position + 1))),
-                    List(word._1) ++ lines.tail, line, position + word._2.length)
-        }
+        positions(index + (word._2, Set(Position(line, position + 1))),
+                  List(word._1) ++ lines.tail, line, position + word._2.length)
       }
     }
   }
 
+  @annotation.tailrec
   private def nextWord(line: String, word: String = "") : (String, String) = {
     if (line.isEmpty) {
       (line, word)
@@ -42,6 +42,7 @@ object WordIndexer {
     }
   }
 
+  @annotation.tailrec
   private def nonWordCharacters(line: String, nonWord: String = "") : (String, String) = {
     if (line.isEmpty || isStartOfWord(line.head)) {
       (line, nonWord)
