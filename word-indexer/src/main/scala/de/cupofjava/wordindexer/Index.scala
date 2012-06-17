@@ -1,21 +1,21 @@
 package de.cupofjava.wordindexer
 
+import collection.mutable.Map
+
 /**
  * @author Felix Müller
  */
 case class Index(wordPositions: Map[String, Set[Position]] = Map.empty) {
 
   def +(index: Index) : Index = {
-    var tempMap = collection.mutable.Map[String, Set[Position]]()
-    tempMap ++= wordPositions
     index.wordPositions foreach { entry =>
-      if (tempMap.keySet.exists(_ == entry._1)) {
-        tempMap(entry._1) ++= entry._2
+      if (this.wordPositions.keySet.exists(_ == entry._1)) {
+        this.wordPositions(entry._1) ++= entry._2
       } else {
-        tempMap += entry
+        this.wordPositions += entry
       }
     }
-    Index(tempMap.toMap)
+    Index(this.wordPositions)
   }
 
   def +(wordPosition : (String, Set[Position])) : Index = {
