@@ -18,11 +18,11 @@ object GroupParser extends RegexParsers {
     case Failure(_, _) => Nil
   }
 
-  def groups : Parser[List[Group]] = "[groups]" ~> rep(group) ^^ ( List() ++ _ )
+  private def groups : Parser[List[Group]] = "[groups]" ~> rep(group) ^^ ( List() ++ _ )
 
-  def group : Parser[Group] = name ~ "=" ~ users ^^ { case name ~ "=" ~ users => Group(name, users) }
+  private def group : Parser[Group] = name ~ "=" ~ users ^^ { case name ~ _ ~ users => Group(name, users) }
 
-  def users : Parser[List[String]] = repsep(name, ",")
+  private def users : Parser[List[String]] = repsep(name, ",")
 
-  def name = """[a-zA-Z_]*""".r
+  private def name = """[a-zA-Z_]*""".r
 }
