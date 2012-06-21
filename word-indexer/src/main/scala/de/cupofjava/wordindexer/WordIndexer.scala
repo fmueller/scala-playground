@@ -8,46 +8,50 @@ package de.cupofjava.wordindexer
  */
 object WordIndexer {
 
+  type Line = Seq[(Char, Int)]
+
   def index(text: String) : Index = text.lines.toList.par.zipWithIndex.map(line => {
-    positions(Index(), line._1, line._2)
+    positions(Index(), line._1.zipWithIndex, line._2)
   }).foldLeft(Index())(_ + _)
 
   @annotation.tailrec
-  private def positions(index: Index, line: String, numberOfLine: Int, position: Int = 0) : Index = {
+  private def positions(index: Index, line: Line, numberOfLine: Int) : Index = {
     if (line.isEmpty) {
       index
     } else {
       val word = nextWord(line)
       if (word._2.isEmpty) {
-        val nonWord = nonWordCharacters(line)
-        positions(index, nonWord._1, numberOfLine, position + nonWord._2.length)
+        positions(index, skipNonWordCharacters(line), numberOfLine)
       } else {
-        positions(index + (word._2, Set(Position(numberOfLine + 1, position + 1))),
-                  word._1, numberOfLine, position + word._2.length)
+        positions(index + (word._2, Set(Position(numberOfLine + 1, word._3 + 1))), word._1, numberOfLine)
       }
     }
   }
 
   @annotation.tailrec
-  private def nextWord(line: String, word: String = "") : (String, String) = {
+  private def nextWord(line: Line, word: String = "", startOfWord: Int = -1) : (Line, String, Int) = {
     if (line.isEmpty) {
-      (line, word)
+      (line, word, startOfWord)
     } else {
-      val first = line.head
+      val first = line.head._1
       if (isStartOfWord(first) || (!word.isEmpty && first.isDigit)) {
-        nextWord(line.tail, word + first)
+        if (startOfWord == -1) {
+          nextWord(line.tail, word + first, line.head._2)
+        } else {
+          nextWord(line.tail, word + first, startOfWord)
+        }
       } else {
-        (line, word)
+        (line, word, startOfWord)
       }
     }
   }
 
   @annotation.tailrec
-  private def nonWordCharacters(line: String, nonWord: String = "") : (String, String) = {
-    if (line.isEmpty || isStartOfWord(line.head)) {
-      (line, nonWord)
+  private def skipNonWordCharacters(line: Line, nonWord: String = "") : Line = {
+    if (line.isEmpty || isStartOfWord(line.head._1)) {
+      line
     } else {
-      nonWordCharacters(line.tail, nonWord + line.head)
+      skipNonWordCharacters(line.tail, nonWord + line.head)
     }
   }
 
