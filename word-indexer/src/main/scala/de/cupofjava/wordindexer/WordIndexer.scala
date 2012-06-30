@@ -11,19 +11,22 @@ object WordIndexer {
   type Line = Seq[(Char, Int)]
 
   def index(text: String) : Index = text.lines.toList.par.zipWithIndex.map(line => {
-    positions(Index(), line._1.zipWithIndex, line._2)
+    wordsWithPositions(Index(), line._1.zipWithIndex, line._2)
   }).foldLeft(Index())(_ + _)
 
   @annotation.tailrec
-  private def positions(index: Index, line: Line, numberOfLine: Int) : Index = {
+  private def wordsWithPositions(index: Index, line: Line, numberOfLine: Int) : Index = {
     if (line.isEmpty) {
       index
     } else {
-      val word = nextWord(line)
-      if (word._2.isEmpty) {
-        positions(index, skipNonWordCharacters(line), numberOfLine)
+      val wordTriple = nextWord(line)
+      val word = wordTriple._2
+      if (word.isEmpty) {
+        wordsWithPositions(index, skipNonWordCharacters(line), numberOfLine)
       } else {
-        positions(index + (word._2, Set(Position(numberOfLine + 1, word._3 + 1))), word._1, numberOfLine)
+        val restOfLine = wordTriple._1
+        val startOfWord = wordTriple._3
+        wordsWithPositions(index + (word, Set(Position(numberOfLine + 1, startOfWord + 1))), restOfLine, numberOfLine)
       }
     }
   }
@@ -33,12 +36,12 @@ object WordIndexer {
     if (line.isEmpty) {
       (line, word, startOfWord)
     } else {
-      val first = line.head._1
-      if (isStartOfWord(first) || (!word.isEmpty && first.isDigit)) {
+      val firstCharacter = line.head._1
+      if (isStartOfWord(firstCharacter) || (!word.isEmpty && firstCharacter.isDigit)) {
         if (startOfWord == -1) {
-          nextWord(line.tail, word + first, line.head._2)
+          nextWord(line.tail, word + firstCharacter, line.head._2)
         } else {
-          nextWord(line.tail, word + first, startOfWord)
+          nextWord(line.tail, word + firstCharacter, startOfWord)
         }
       } else {
         (line, word, startOfWord)
