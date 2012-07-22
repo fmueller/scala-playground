@@ -1,0 +1,9 @@
+{
+    "properties":{
+
+        "content":{
+            "type": "string",
+            "store": "no"
+        }
+    }
+}
